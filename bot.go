@@ -27,12 +27,28 @@ func ReadConfig() Config {
 	return config
 }
 
+var config = ReadConfig()
+
+//Establishes a connection to the IRC server specified in gobot.conf.
+func Connect(botName string, botUsername string, serverAddress string, serverPort int) *irc.Connection {
+	connection := irc.IRC(botName, botUsername)
+
+	//TODO: There's probably a better way to do this than strings.Join().
+	connectionString := []string{serverAddress, strconv.Itoa(serverPort)}
+	err := connection.Connect(strings.Join(connectionString, ":"))
+	if err != nil {
+		fmt.Printf("Connection error: %s", err)
+		return nil
+	}
+
+	return connection
+}
+
 func main() {
-	var config = ReadConfig()
 	var channel = config.Channel
 
 	//The IRC function takes a user and nick, we just send the same thing for both.
-	connection := irc.IRC(config.Botname, config.Botname)
+	connection := Connect(config.Botname, config.Botname, config.Server, config.Port)
 
 	//Override the irc-event's logging to stdout to log to a file.
 	logFile, loggerErr := os.OpenFile("gobot.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -41,13 +57,6 @@ func main() {
 	}
 	defer logFile.Close()
 	connection.Log = log.New(logFile, "", log.LstdFlags)
-
-	connectionString := []string{config.Server, strconv.Itoa(config.Port)}
-	err := connection.Connect(strings.Join(connectionString, ":"))
-	if err != nil {
-		fmt.Printf("Connection error: %s", err)
-		return
-	}
 
 	connection.AddCallback("001", func(e *irc.Event) {
 		connection.Join(channel)

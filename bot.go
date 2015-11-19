@@ -11,6 +11,7 @@ import (
 	"github.com/thoj/go-ircevent"
 )
 
+//Config structure for storing the toml data from the config file.
 type Config struct {
 	Server  string
 	Port    int
@@ -18,6 +19,7 @@ type Config struct {
 	Botname string
 }
 
+//ReadConfig reads in and parses toml data from the config file.
 func ReadConfig() Config {
 	var config Config
 	if _, err := toml.DecodeFile("./gobot.conf", &config); err != nil {
@@ -27,7 +29,7 @@ func ReadConfig() Config {
 	return config
 }
 
-//Establishes a connection to the IRC server specified in gobot.conf.
+//Connect establishes a connection to the IRC server specified in gobot.conf.
 func Connect(botName string, botUsername string, serverAddress string, serverPort int) *irc.Connection {
 	connection := irc.IRC(botName, botUsername)
 
@@ -49,7 +51,7 @@ func main() {
 	//The IRC function takes a nick and username, we just send the same thing for both.
 	connection := Connect(config.Botname, config.Botname, config.Server, config.Port)
 
-	//Override the irc-event's logging to stdout to log to a file.
+	//Override irc-event's default logging to stdout to log to a file.
 	logFile, loggerErr := os.OpenFile("gobot.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if loggerErr != nil {
 		fmt.Printf("Error opening log file: %v", loggerErr)

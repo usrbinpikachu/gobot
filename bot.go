@@ -59,8 +59,13 @@ func main() {
 	defer logFile.Close()
 	connection.Log = log.New(logFile, "", log.LstdFlags)
 
+	//001 is the WELCOME event, which means we successfully connected.
 	connection.AddCallback("001", func(e *irc.Event) {
 		connection.Join(channel)
+	})
+
+	connection.AddCallback("PRIVMSG", func(e *irc.Event) {
+		connection.Log.Printf(e.Message())
 	})
 
 	connection.Loop()

@@ -27,8 +27,6 @@ func ReadConfig() Config {
 	return config
 }
 
-var config = ReadConfig()
-
 //Establishes a connection to the IRC server specified in gobot.conf.
 func Connect(botName string, botUsername string, serverAddress string, serverPort int) *irc.Connection {
 	connection := irc.IRC(botName, botUsername)
@@ -45,9 +43,10 @@ func Connect(botName string, botUsername string, serverAddress string, serverPor
 }
 
 func main() {
-	var channel = config.Channel
+	config := ReadConfig()
+	channel := config.Channel
 
-	//The IRC function takes a user and nick, we just send the same thing for both.
+	//The IRC function takes a nick and username, we just send the same thing for both.
 	connection := Connect(config.Botname, config.Botname, config.Server, config.Port)
 
 	//Override the irc-event's logging to stdout to log to a file.

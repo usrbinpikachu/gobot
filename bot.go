@@ -11,12 +11,18 @@ import (
 	"github.com/thoj/go-ircevent"
 )
 
-//Config structure for storing the toml data from the config file.
+//Config is a struct for storing the toml data from the config file.
 type Config struct {
-	Server  string
-	Port    int
-	Channel string
-	Botname string
+	Server    string
+	Port      int
+	Channel   string
+	Botname   string
+	Whitelist Whitelist `toml:"Whitelist"`
+}
+
+//Whitelist is a struct for storing the whitelisted users list
+type Whitelist struct {
+	Users []string
 }
 
 //ReadConfig reads in and parses toml data from the config file.
@@ -44,11 +50,24 @@ func Connect(botName string, botUsername string, serverAddress string, serverPor
 	return connection
 }
 
+//CheckWhitelist checks incoming events' sender nicks against the whitelist.
+func CheckWhitelist(e *irc.Event, c Config) bool {
+	for _, s := range c.Whitelist.Users {
+		if s == e.Nick {
+			fmt.Println("True!")
+			return true
+		}
+	}
+
+	fmt.Println("False!")
+	return false
+}
+
 func main() {
 	config := ReadConfig()
 	channel := config.Channel
 
-	//The IRC function takes a nick and username, we just send the same thing for both.
+	//The IRC function takes a nick and username, we just the same thing for both.
 	connection := Connect(config.Botname, config.Botname, config.Server, config.Port)
 
 	//Override irc-event's default logging to stdout to log to a file.
@@ -64,8 +83,14 @@ func main() {
 		connection.Join(channel)
 	})
 
+	//On PRIVMSG log the nick and message, then check if the nick is whitelisted.
 	connection.AddCallback("PRIVMSG", func(e *irc.Event) {
-		connection.Log.Printf(e.Message())
+		connection.Log.Printf("%s: %s", e.Nick, e.Message())
+		if CheckWhitelist(e, config) {
+			connection.Log.Printf("%s is whitelisted.", e.Nick)
+		} else {
+			connection.Log.Printf("%s is not whitelisted.", e.Nick)
+		}
 	})
 
 	connection.Loop()

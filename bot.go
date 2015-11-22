@@ -65,7 +65,7 @@ func main() {
 	config := ReadConfig()
 	channel := config.Channel
 
-	//The IRC function takes a nick and username, we just the same thing for both.
+	//The IRC function takes a nick and username, we send the same thing for both.
 	connection := Connect(config.Botname, config.Botname, config.Server, config.Port)
 
 	//Override irc-event's default logging to stdout to log to a file.

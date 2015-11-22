@@ -11,30 +11,6 @@ import (
 	"github.com/thoj/go-ircevent"
 )
 
-//Config is a struct for storing the toml data from the config file.
-type Config struct {
-	Server    string
-	Port      int
-	Channel   string
-	Botname   string
-	Whitelist Whitelist `toml:"Whitelist"`
-}
-
-//Whitelist is a struct for storing the whitelisted users list
-type Whitelist struct {
-	Users []string
-}
-
-//ReadConfig reads in and parses toml data from the config file.
-func ReadConfig() Config {
-	var config Config
-	if _, err := toml.DecodeFile("./gobot.conf", &config); err != nil {
-		fmt.Println(err)
-	}
-
-	return config
-}
-
 //Connect establishes a connection to the IRC server specified in gobot.conf.
 func Connect(botName string, botUsername string, serverAddress string, serverPort int) *irc.Connection {
 	connection := irc.IRC(botName, botUsername)

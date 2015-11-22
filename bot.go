@@ -54,12 +54,10 @@ func Connect(botName string, botUsername string, serverAddress string, serverPor
 func CheckWhitelist(e *irc.Event, c Config) bool {
 	for _, s := range c.Whitelist.Users {
 		if s == e.Nick {
-			fmt.Println("True!")
 			return true
 		}
 	}
 
-	fmt.Println("False!")
 	return false
 }
 

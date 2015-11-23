@@ -7,7 +7,9 @@ Installation
 ------------
 
 `git clone https://github.com/kudakeru/gobot.git`
+
 `go build bot.go`
+
 `./bot`
 
 Libraries

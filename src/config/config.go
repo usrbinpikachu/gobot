@@ -1,4 +1,4 @@
-package gobot
+package config
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ type Whitelist struct {
 //ReadConfig reads in and parses toml data from the config file.
 func ReadConfig() Config {
 	var config Config
-	if _, err := toml.DecodeFile("./gobot.conf", &config); err != nil {
+	if _, err := toml.DecodeFile("../gobot.conf", &config); err != nil {
 		fmt.Println(err)
 	}
 

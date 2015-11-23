@@ -1,4 +1,4 @@
-package gobot
+package connect
 
 import (
 	"fmt"

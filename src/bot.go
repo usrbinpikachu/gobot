@@ -1,17 +1,18 @@
-package gobot
+package main
 
 import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/thoj/go-ircevent"
+
+	"./config"
+	"./connect"
 )
 
 //CheckWhitelist checks incoming events' sender nicks against the whitelist.
-func CheckWhitelist(e *irc.Event, c Config) bool {
+func CheckWhitelist(e *irc.Event, c config.Config) bool {
 	for _, s := range c.Whitelist.Users {
 		if s == e.Nick {
 			return true
@@ -22,11 +23,15 @@ func CheckWhitelist(e *irc.Event, c Config) bool {
 }
 
 func main() {
-	config := ReadConfig()
+	config := config.ReadConfig()
+	if config == nil {
+		fmt.Println("Config not loaded. Is the path correct?")
+		os.Exit(1)
+	}
 	channel := config.Channel
 
 	//The IRC function takes a nick and username, we send the same thing for both.
-	connection := Connect(config.Botname, config.Botname, config.Server, config.Port)
+	connection := connect.Connect(config.Botname, config.Botname, config.Server, config.Port)
 
 	//Override irc-event's default logging to stdout to log to a file.
 	logFile, loggerErr := os.OpenFile("gobot.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

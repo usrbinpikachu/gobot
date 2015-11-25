@@ -9,6 +9,7 @@ import (
 
 	"./config"
 	"./connect"
+	"./wunderground"
 )
 
 //CheckWhitelist checks incoming events' sender nicks against the whitelist.

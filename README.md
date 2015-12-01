@@ -15,4 +15,4 @@ Installation
 Libraries
 ---------
 
-Uses [go-ircevent](https://github.com/thoj/go-ircevent/blob/master/README.markdown)
+Uses [go-ircevent](https://github.com/thoj/go-ircevent/blob/master/README.markdown) and [toml](https://github.com/BurntSushi/toml).

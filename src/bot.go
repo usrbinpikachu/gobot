@@ -25,7 +25,7 @@ func CheckWhitelist(e *irc.Event, c config.Config) bool {
 
 func main() {
 	config := config.ReadConfig()
-	if config == nil {
+	if &config == nil {
 		fmt.Println("Config not loaded. Is the path correct?")
 		os.Exit(1)
 	}
@@ -56,6 +56,12 @@ func main() {
 			connection.Log.Printf("%s is not whitelisted.", e.Nick)
 		}
 	})
+
+	temp, err := wunderground.Temperature("98004")
+	if err != nil {
+		fmt.Printf("Error retrieving Wunderground API data: %s", err)
+	}
+	connection.Log.Printf("Temperature: %gF", temp)
 
 	connection.Loop()
 }

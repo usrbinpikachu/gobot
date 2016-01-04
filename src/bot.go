@@ -9,6 +9,7 @@ import (
 
 	"./config"
 	"./connect"
+	"./dictionary"
 	"./wunderground"
 )
 
@@ -62,6 +63,13 @@ func main() {
 		fmt.Printf("Error retrieving Wunderground API data: %s", err)
 	}
 	connection.Log.Printf("Temperature: %gF", temp)
+
+	//TODO: Rework this to return all of the returned definitions instead of just the first.
+	word, err := dictionary.Define("cake")
+	if err != nil {
+		fmt.Printf("Error retrieving Wordnik API data: %s", err)
+	}
+	connection.Log.Printf(word[0].Word + ": " + word[0].Definition)
 
 	connection.Loop()
 }

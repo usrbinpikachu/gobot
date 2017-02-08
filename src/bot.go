@@ -25,15 +25,15 @@ func CheckWhitelist(e *irc.Event, c config.Config) bool {
 }
 
 func main() {
-	config := config.ReadConfig()
-	if &config == nil {
+	conf := config.ReadConfig()
+	if &conf == nil {
 		fmt.Println("Config not loaded. Is the path correct?")
 		os.Exit(1)
 	}
-	channel := config.Channel
+	channel := conf.Channel
 
 	//The IRC function takes a nick and username, we send the same thing for both.
-	connection := connect.Connect(config.Botname, config.Botname, config.Server, config.Port)
+	connection := connect.Connect(conf.Botname, conf.Botname, conf.Server, conf.Port)
 
 	//Override irc-event's default logging to stdout to log to a file.
 	logFile, loggerErr := os.OpenFile("gobot.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -51,7 +51,7 @@ func main() {
 	//On PRIVMSG log the nick and message, then check if the nick is whitelisted.
 	connection.AddCallback("PRIVMSG", func(e *irc.Event) {
 		connection.Log.Printf("%s: %s", e.Nick, e.Message())
-		if CheckWhitelist(e, config) {
+		if CheckWhitelist(e, conf) {
 			connection.Log.Printf("%s is whitelisted.", e.Nick)
 		} else {
 			connection.Log.Printf("%s is not whitelisted.", e.Nick)

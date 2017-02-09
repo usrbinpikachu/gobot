@@ -27,8 +27,10 @@ func CheckWhitelist(e *irc.Event, c config.Config) bool {
 func main() {
 	config := config.ReadConfig()
 	if &config == nil {
-		fmt.Println("Config not loaded. Is the path correct?")
-		os.Exit(1)
+		log.WithFields(log.Fields{
+			"botStartup": "configLoad",
+			"status": "failure",
+		}).Fatal("Config not loaded. Is the path correct?")
 	}
 	channel := config.Channel
 
@@ -38,7 +40,10 @@ func main() {
 	//Override irc-event's default logging to stdout to log to a file.
 	logFile, loggerErr := os.OpenFile("gobot.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if loggerErr != nil {
-		log.Info("Failed to log to file, using default stderr.")
+		log.WithFields(log.Fields{
+			"botStartup": "logInit",
+			"status": "failure",
+		}).Error("Failed open log file, using default stderr.")
 	} else {
 		log.SetOutput(logFile)
 	}
@@ -52,6 +57,10 @@ func main() {
 	//001 is the WELCOME event, which means we successfully connected.
 	connection.AddCallback("001", func(e *irc.Event) {
 		connection.Join(channel)
+		log.WithFields(log.Fields{
+			"event": "channelJoin",
+			"status": "success",
+		}).Info("Successfully joined %s.", channel)
 	})
 
 	//On PRIVMSG log the nick and message, then check if the nick is whitelisted.
@@ -77,27 +86,27 @@ func main() {
 	temp, err := wunderground.Temperature("98004")
 	if err != nil {
 		log.WithFields(log.Fields{
-			"event": "Wunderground",
-			"status": "Failure",
+			"event": "wunderground",
+			"status": "failure",
 		}).Error(fmt.Sprintf("Error retrieving Wunderground API data: %s", err))
 		fmt.Printf("Error retrieving Wunderground API data: %s", err)
 	}
 	log.WithFields(log.Fields{
-		"event": "Wunderground",
-		"status": "Success",
+		"event": "wunderground",
+		"status": "success",
 	}).Info(fmt.Sprintf("Temperature %gF", temp))
 
 	//TODO: Rework this to return all of the returned definitions instead of just the first.
 	word, err := dictionary.Define("cake")
 	if err != nil {
 		log.WithFields(log.Fields{
-			"event": "Dictionary",
-			"status": "Failure",
+			"event": "dictionary",
+			"status": "failure",
 		}).Error(fmt.Sprintf("Error retrieving Wordnik API data: %s", err))
 	}
 	log.WithFields(log.Fields{
-		"event": "Dictionary",
-		"status": "Success",
+		"event": "dictionary",
+		"status": "success",
 	}).Info(fmt.Sprintf("%s: %s", word[0].Word, word[0].Definition))
 
 	connection.Loop()

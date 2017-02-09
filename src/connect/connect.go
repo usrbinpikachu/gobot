@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/thoj/go-ircevent"
+	log "github.com/sirupsen/logrus"
 )
 
 //Connect establishes a connection to the IRC server specified in gobot.conf.
@@ -16,9 +17,16 @@ func Connect(botName string, botUsername string, serverAddress string, serverPor
 	connectionString := []string{serverAddress, strconv.Itoa(serverPort)}
 	err := connection.Connect(strings.Join(connectionString, ":"))
 	if err != nil {
-		fmt.Printf("Connection error: %s", err)
+		log.WithFields(log.Fields{
+			"event": "serverConnection",
+			"status": "failure",
+		}).Error(fmt.Sprintf("Connection error: %s", err))
 		return nil
 	}
 
+	log.WithFields(log.Fields{
+		"event": "serverConnection",
+		"status": "success",
+	}).Info(fmt.Sprintf("Successfully connected to %s:%s", serverAddress, serverPort))
 	return connection
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/BurntSushi/toml"
+	log "github.com/sirupsen/logrus"
 )
 
 //Config is a struct for storing the toml data from the config file.
@@ -24,7 +25,10 @@ type Whitelist struct {
 func ReadConfig() Config {
 	var config Config
 	if _, err := toml.DecodeFile("./gobot.conf", &config); err != nil {
-		fmt.Println(err)
+		log.WithFields(log.Fields{
+			"botStartup": "configLoad",
+			"status": "failure",
+		}).Fatal(fmt.Sprintf("Error loading config file: %s", err))
 	}
 
 	return config

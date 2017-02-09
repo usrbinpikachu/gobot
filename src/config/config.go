@@ -31,5 +31,9 @@ func ReadConfig() Config {
 		}).Error(fmt.Sprintf("Error loading config file: %s", err))
 	}
 
+	log.WithFields(log.Fields{
+		"botStartup": "configLoad"<
+		"status": "success",
+	}).Info("Successfully loaded config file.")
 	return config
 }

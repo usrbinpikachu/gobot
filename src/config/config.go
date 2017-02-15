@@ -32,7 +32,7 @@ func ReadConfig() Config {
 	}
 
 	log.WithFields(log.Fields{
-		"botStartup": "configLoad"<
+		"botStartup": "configLoad",
 		"status": "success",
 	}).Info("Successfully loaded config file.")
 	return config

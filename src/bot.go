@@ -25,14 +25,14 @@ func CheckWhitelist(e *irc.Event, c config.Config) bool {
 }
 
 func main() {
-	config := config.ReadConfig()
-	if &config == nil {
+	readConfig := config.ReadConfig()
+	if &readConfig == nil {
 		log.WithFields(log.Fields{
 			"botStartup": "configLoad",
 			"status": "failure",
 		}).Fatal("Config not loaded. Is the path correct?")
 	}
-	channel := config.Channel
+	channel := readConfig.Channel
 
 	//Initialize logrus logger.
 	log.SetFormatter(&log.JSONFormatter{})
@@ -51,7 +51,7 @@ func main() {
 	defer logFile.Close()
 
 	//The IRC function takes a nick and username, we send the same thing for both.
-	connection := connect.Connect(config.Botname, config.Botname, config.Server, config.Port)
+	connection := connect.Connect(readConfig.Botname, readConfig.Botname, readConfig.Server, readConfig.Port)
 
 
 	//001 is the WELCOME event, which means we successfully connected.
@@ -70,7 +70,7 @@ func main() {
 			"sender": e.Nick,
 		}).Info(e.Message())
 
-		if CheckWhitelist(e, config) {
+		if CheckWhitelist(e, readConfig) {
 			log.WithFields(log.Fields{
 				"event": "PRIVMSG",
 				"sender": e.Nick,
@@ -89,7 +89,7 @@ func main() {
 			"event": "wunderground",
 			"status": "failure",
 		}).Error(fmt.Sprintf("Error retrieving Wunderground API data: %s", err))
-		fmt.Printf("Error retrieving Wunderground API data: %s", err)
+
 	}
 	log.WithFields(log.Fields{
 		"event": "wunderground",
